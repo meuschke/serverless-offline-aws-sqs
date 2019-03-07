@@ -1,6 +1,6 @@
 {
   "name": "serverless-offline-aws-sqs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AWS SQS 📤 Plugin for Serverless Framework ⚡️| Webpack support | Local ElasticMQ",
   "main": "src",
   "repository": {
