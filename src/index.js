@@ -35,7 +35,7 @@ class ServerlessOfflineSQS {
     if (offlinePlugin) {
       this.location = offlinePlugin.options.location;
     }
-    this.config = getConfig(this.service, 'serverless-offline-sqs');
+    this.config = getConfig(this.service, 'serverless-offline-aws-sqs');
 
     this.commands = {};
 
@@ -77,7 +77,7 @@ class ServerlessOfflineSQS {
     }
 
     throw new Error(
-      `QueueName not found. See https://github.com/CoorpAcademy/serverless-plugins/tree/master/packages/serverless-offline-sqs#functions`
+      `QueueName not found. See Readme`
     );
   }
 
