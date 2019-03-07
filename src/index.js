@@ -199,7 +199,54 @@ class ServerlessOfflineSQS {
     next();
   }
 
+  async createInitialQueue(queue) {
+
+    const client = await this.getClient();
+
+    const params = {
+      QueueName: queue.QueueName, /* required */
+      Attributes: {}
+    };
+
+    forEach(attribute => {
+
+      if (attribute !== 'QueueName') {
+        params.Attributes[attribute] = queue[attribute].toString();
+      }
+
+    }, Object.keys(queue));
+
+    client.createQueue(params, (err) => {
+      if (err) console.log(err);
+    });
+
+
+  }
+
   offlineStartInit() {
+    this.serverless.cli.log(`Creating Offline SQS Queues.`);
+
+    if (
+      this.service &&
+      this.service.resources &&
+      this.service.resources.Resources
+    ) {
+
+      const resouces = Object.keys(this.service.resources.Resources);
+
+      forEach(resourceName => {
+
+        if (this.service.resources.Resources[resourceName].Type === 'AWS::SQS::Queue') {
+          this.serverless.cli.log(`Creating Queue ${resourceName}`);
+          this.createInitialQueue(this.service.resources.Resources[resourceName].Properties)
+        }
+
+      }, resouces);
+
+      printBlankLine();
+
+    }
+
     this.serverless.cli.log(`Starting Offline SQS.`);
 
     mapValues.convert({cap: false})((_function, functionName) => {
