@@ -29,12 +29,6 @@ class ServerlessOfflineSQS {
     this.serverless = serverless;
     this.service = serverless.service;
     this.options = options;
-    this.location = ''
-    const offlinePlugin = this.serverless.pluginManager.getPlugins()
-      .find((p) => p.constructor && p.constructor.name === "Offline");
-    if (offlinePlugin) {
-      this.location = offlinePlugin.options.location;
-    }
     this.config = getConfig(this.service, 'serverless-offline-aws-sqs');
 
     this.commands = {};
@@ -105,6 +99,7 @@ class ServerlessOfflineSQS {
     process.env = functionEnv;
 
     const servicePath = join(this.serverless.config.servicePath, location);
+    console.log(servicePath)
     const funOptions = getFunctionOptions(__function, functionName, servicePath);
     const handler = createHandler(funOptions, Object.assign({}, this.options, this.config));
 
@@ -223,9 +218,8 @@ class ServerlessOfflineSQS {
 
   }
 
-  offlineStartInit() {
+  async offlineStartInit() {
     this.serverless.cli.log(`Creating Offline SQS Queues.`);
-
     if (
       this.service &&
       this.service.resources &&
@@ -233,15 +227,17 @@ class ServerlessOfflineSQS {
     ) {
 
       const resouces = Object.keys(this.service.resources.Resources);
-
+      const promises = []
       forEach(resourceName => {
 
         if (this.service.resources.Resources[resourceName].Type === 'AWS::SQS::Queue') {
           this.serverless.cli.log(`Creating Queue ${resourceName}`);
-          this.createInitialQueue(this.service.resources.Resources[resourceName].Properties)
+          promises.push(this.createInitialQueue(this.service.resources.Resources[resourceName].Properties))
         }
 
       }, resouces);
+
+      await Promise.all(promises)
 
       printBlankLine();
 
