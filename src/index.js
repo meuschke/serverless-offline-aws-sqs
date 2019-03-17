@@ -196,25 +196,27 @@ class ServerlessOfflineSQS {
 
   async createInitialQueue(queue) {
 
-    const client = await this.getClient();
+    return new Promise(async (resolve, reject) => {
+      const client = await this.getClient();
 
-    const params = {
-      QueueName: queue.QueueName, /* required */
-      Attributes: {}
-    };
+      const params = {
+        QueueName: queue.QueueName, /* required */
+        Attributes: {}
+      };
 
-    forEach(attribute => {
+      forEach(attribute => {
 
-      if (attribute !== 'QueueName') {
-        params.Attributes[attribute] = queue[attribute].toString();
-      }
+        if (attribute !== 'QueueName') {
+          params.Attributes[attribute] = queue[attribute].toString();
+        }
 
-    }, Object.keys(queue));
+      }, Object.keys(queue));
 
-    client.createQueue(params, (err) => {
-      if (err) console.log(err);
-    });
-
+      client.createQueue(params, (err) => {
+        if (err) reject(err);
+        resolve()
+      });
+    })
 
   }
 
