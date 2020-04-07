@@ -91,7 +91,7 @@ docker run -it -p 9324:9324 s12v/elasticmq:latest
 
 ```
 
-Queues will be automatically created.
+Queues will be automatically created. The QueueUrl for a SendMessage command sent by a client would be `http://0.0.0.0:9324/queue/MyQueue`.
 
 
 ## Roadmap
